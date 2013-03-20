@@ -14,8 +14,8 @@ namespace harParser
 
     public class PageTimings
     {
-        public int onContentLoad { get; set; }
-        public int onLoad { get; set; }
+        public string onContentLoad { get; set; }
+        public string onLoad { get; set; }
     }
 
     public class Page

@@ -24,9 +24,9 @@ namespace harParser
         static void Main(string[] args)
         {
             Console.WriteLine("Input google username:");
-            string userName = Console.ReadLine();
+            string userName = "patrick.mcclory@rightscale.com";// Console.ReadLine();
             Console.WriteLine("Input google password:");
-            string password = Console.ReadLine();
+            string password = "fU4reqUD!";// Console.ReadLine();
             Console.WriteLine("Input spreadsheet to enumerate");
             string spreadsheetName = string.Empty;// Console.ReadLine();
             Console.WriteLine("Sheet to use");
@@ -36,7 +36,7 @@ namespace harParser
 
             if (string.IsNullOrEmpty(spreadsheetName))
             {
-                spreadsheetName = "";
+                spreadsheetName = "Gig-it Performance Test Data ";
             }
 
             if (string.IsNullOrWhiteSpace(sheetName))
@@ -128,40 +128,54 @@ namespace harParser
             {
                 foreach(string f in files)
                 {
-                    string testID = f.Replace(".har", "").Replace(@"D:\dev\harfiles\", "");
-                    HarFile hf = null;
-                    using (System.IO.StreamReader sr = new System.IO.StreamReader(f))
+                    try
                     {
-                        string contents = sr.ReadToEnd();
-                        hf = JsonConvert.DeserializeObject<HarFile>(contents);
-                    }
-                    string dataFileContents = string.Empty;
-                    foreach (var entries in hf.log.entries)
-                    {
-                        string dataline = string.Empty;
-                        dataline += buildEntry(entries.request.url );
-                        dataline += buildEntry(entries.request.method );
-                        dataline += buildEntry(entries.request.headersSize.ToString() );
-                        dataline += buildEntry(entries.request.bodySize.ToString() );
-                        dataline += buildEntry(entries.time.ToString() );
-                        dataline += buildEntry(entries.timings.dns.ToString() );
-                        dataline += buildEntry(entries.timings.connect.ToString() );
-                        dataline += buildEntry(entries.timings.send.ToString());
-                        dataline += buildEntry(entries.timings.blocked.ToString());
-                        dataline += buildEntry(entries.timings.wait.ToString() );
-                        dataline += buildEntry(entries.timings.ssl.ToString() );
-                        dataline += buildEntry(entries.timings.receive.ToString() );
-                    
-                        dataline += buildEntry(entries.response.bodySize.ToString());
-                        dataline += buildEntry(entries.response.status.ToString() );
-                        dataline += buildEntry(entries.response.statusText );
-                        dataFileContents += dataline + Environment.NewLine;
-                    }
+                        string testID = f.Replace(".har", "").Replace(@"D:\dev\harfiles\", "");
+                        List<HarFile> hf = null;
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader(f))
+                        {
+                            string contents = sr.ReadToEnd();
+                            hf = JsonConvert.DeserializeObject<List<HarFile>>(contents);
+                        }
+                        string dataFileContents = string.Empty;
+                        foreach (var hfe in hf)
+                        {
+                            foreach (var entries in hfe.log.entries)
+                            {
+                                string dataline = string.Empty;
+                                dataline += buildEntry(entries.request.url);
+                                dataline += buildEntry(entries.request.method);
+                                dataline += buildEntry(entries.request.headersSize.ToString());
+                                dataline += buildEntry(entries.request.bodySize.ToString());
+                                dataline += buildEntry(entries.time.ToString());
+                                dataline += buildEntry(entries.timings.dns);
+                                dataline += buildEntry(entries.timings.connect);
+                                dataline += buildEntry(entries.timings.send);
+                                dataline += buildEntry(entries.timings.blocked);
+                                dataline += buildEntry(entries.timings.wait);
+                                dataline += buildEntry(entries.timings.ssl);
+                                dataline += buildEntry(entries.timings.receive);
 
-                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"d:\dev\harfiles\_hardetail.csv"))
+                                dataline += buildEntry(entries.response.bodySize.ToString());
+                                dataline += buildEntry(entries.response.status.ToString());
+                                dataline += buildEntry(entries.response.statusText);
+                                dataFileContents += dataline + Environment.NewLine;
+                            }
+
+                            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"d:\dev\harfiles\_hardetail.csv"))
+                            {
+                                sw.Write(dataFileContents);
+                                sw.Flush();
+                            }
+                        }
+                    }
+                    catch (JsonSerializationException)
                     {
-                        sw.Write(dataFileContents);
-                        sw.Flush();
+
+                    }
+                    catch (JsonReaderException)
+                    {
+
                     }
                 }
             }
