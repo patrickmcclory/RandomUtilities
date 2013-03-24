@@ -24,9 +24,9 @@ namespace harParser
         static void Main(string[] args)
         {
             Console.WriteLine("Input google username:");
-            string userName = "patrick.mcclory@rightscale.com";// Console.ReadLine();
+            string userName = Console.ReadLine();
             Console.WriteLine("Input google password:");
-            string password = "fU4reqUD!";// Console.ReadLine();
+            string password = Console.ReadLine();
             Console.WriteLine("Input spreadsheet to enumerate");
             string spreadsheetName = string.Empty;// Console.ReadLine();
             Console.WriteLine("Sheet to use");
@@ -105,17 +105,13 @@ namespace harParser
                             }
                             else
                             {
-                                using(System.IO.StreamWriter sw = new System.IO.StreamWriter(@"D:\dev\harfiles\" + rowID.ToString() + ".har"))
-                                {
-                                    sw.Write(curCell.Cell.Value);
-                                    sw.Flush();
-                                }
+                                //do nothing
                             }
                         }
                     }
                     if (!string.IsNullOrWhiteSpace(csvString))
                     {
-                        using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"D:\dev\harfiles\_harHeaders.csv"))
+                        using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"D:\Dropbox\Services Operations\Clients\Chasin 3D Gig-It\E2E_SOW#_1048\3-Development\TestData\_harHeaders.csv"))
                         {
                             sw.Write(csvString);
                             sw.Flush();
@@ -123,26 +119,26 @@ namespace harParser
                     }
                 }
             }
-            string[] files = System.IO.Directory.GetFiles(@"D:\dev\harfiles", "*.har");
+            string[] files = System.IO.Directory.GetFiles(@"D:\Dropbox\Services Operations\Clients\Chasin 3D Gig-It\E2E_SOW#_1048\3-Development\TestData\TestRun1", "*.har");
             if(files != null && files.Length > 0)
             {
                 foreach(string f in files)
                 {
                     try
                     {
-                        string testID = f.Replace(".har", "").Replace(@"D:\dev\harfiles\", "");
-                        List<HarFile> hf = null;
+                        string testID = f.Replace(".har", "").Replace(@"D:\Dropbox\Services Operations\Clients\Chasin 3D Gig-It\E2E_SOW#_1048\3-Development\TestData\TestRun1\", "").Split('_').First<string>();
+                        HarFile hf = null;
                         using (System.IO.StreamReader sr = new System.IO.StreamReader(f))
                         {
                             string contents = sr.ReadToEnd();
-                            hf = JsonConvert.DeserializeObject<List<HarFile>>(contents);
+                            hf = JsonConvert.DeserializeObject<HarFile>(contents);
                         }
                         string dataFileContents = string.Empty;
-                        foreach (var hfe in hf)
-                        {
-                            foreach (var entries in hfe.log.entries)
+
+                            foreach (var entries in hf.log.entries)
                             {
                                 string dataline = string.Empty;
+                                dataline += buildEntry(testID);
                                 dataline += buildEntry(entries.request.url);
                                 dataline += buildEntry(entries.request.method);
                                 dataline += buildEntry(entries.request.headersSize.ToString());
@@ -162,12 +158,11 @@ namespace harParser
                                 dataFileContents += dataline + Environment.NewLine;
                             }
 
-                            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"d:\dev\harfiles\_hardetail.csv"))
+                            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(@"D:\Dropbox\Services Operations\Clients\Chasin 3D Gig-It\E2E_SOW#_1048\3-Development\TestData\_hardetail.csv",true))
                             {
                                 sw.Write(dataFileContents);
                                 sw.Flush();
                             }
-                        }
                     }
                     catch (JsonSerializationException)
                     {

@@ -39,12 +39,19 @@ namespace harParser
         public List<Param> @params { get; set; }
     }
 
+    public class Header
+    {
+        public string name { get; set; }
+        public string value { get; set; }
+    }
+
+
     public class Request
     {
         public string method { get; set; }
         public string url { get; set; }
         public string httpVersion { get; set; }
-        public List<object> headers { get; set; }
+        public List<Header> headers { get; set; }
         public List<object> queryString { get; set; }
         public List<object> cookies { get; set; }
         public int headersSize { get; set; }
@@ -64,12 +71,18 @@ namespace harParser
         public int status { get; set; }
         public string statusText { get; set; }
         public string httpVersion { get; set; }
-        public List<object> headers { get; set; }
+        public List<Header2> headers { get; set; }
         public List<object> cookies { get; set; }
         public Content content { get; set; }
         public string redirectURL { get; set; }
         public int headersSize { get; set; }
         public int bodySize { get; set; }
+    }
+
+    public class Header2
+    {
+        public string name { get; set; }
+        public string value { get; set; }
     }
 
     public class Cache
